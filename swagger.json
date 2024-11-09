@@ -245,6 +245,10 @@
                   "message": {
                     "type": "string",
                     "description": "The plaintext message to be encrypted"
+                  },
+                  "publicKey": {
+                    "type": "string",
+                    "description": "The RSA public key used for encryption"
                   }
                 },
                 "required": ["message"]
@@ -252,17 +256,6 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "public-key",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "The RSA public key used for encryption"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Encryption successful",

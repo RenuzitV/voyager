@@ -21,7 +21,7 @@ const encryptMessage = (message, publicKey) => {
 // Function to decrypt a message with the private key (RSA decryption)
 const decryptMessage = (encryptedMessage) => {
   try {
-    const decrypted = crypto.privateDecrypt(privateKey, Buffer.from(encryptedMessage, 'base64'));
+    const decrypted = crypto.privateDecrypt({key: privateKey, padding: crypto.constants.RSA_PKCS1_PADDING}, Buffer.from(encryptedMessage, 'base64'));
     return decrypted.toString('utf8');
   } catch (error) {
     console.log(error)
@@ -31,19 +31,21 @@ const decryptMessage = (encryptedMessage) => {
 
 // Encryption handler
 export async function handleEncryption(req, res) {
-  const { message } = req.body;
-  const publicKey = req.headers['public-key'];
+  const { message, publicKey } = req.body;
 
   if (!message || !publicKey) {
     return res.status(400).json({ error: 'Message and public key are required.' });
   }
 
   try {
-    const encryptedMessage = encryptMessage(message, publicKey);
+    const publicKeyPem = Buffer.from(publicKey, 'base64').toString('utf-8');
+    const encryptedMessage = encryptMessage(message, publicKeyPem);
+
     res.json({
       encryptedMessage,
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Encryption failed.' });
   }
 }
@@ -67,7 +69,8 @@ export async function handleDecryption(req, res) {
 // Public Key sharing handler
 export async function getPublicKey(req, res) {
   try {
-    res.json({ publicKey });
+    const encodedPublicKey = Buffer.from(publicKey).toString('base64'); 
+    res.json({ publicKey: encodedPublicKey });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to retrieve public key.' });
