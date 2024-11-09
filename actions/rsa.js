@@ -7,10 +7,7 @@ const publicKey = fs.readFileSync('keys/public.pem', 'utf8');
 // Function to encrypt a message with a provided public key (RSA encryption)
 const encryptMessage = (message, publicKey) => {
   try {
-    const encrypted = crypto.publicEncrypt({
-      key: publicKey,
-      padding: crypto.constants.RSA_PKCS1_PADDING,
-    }, Buffer.from(message));
+    const encrypted = crypto.publicEncrypt(publicKey, Buffer.from(message));
     return encrypted.toString('base64');
   } catch (error) {
     console.log(error)
@@ -21,7 +18,7 @@ const encryptMessage = (message, publicKey) => {
 // Function to decrypt a message with the private key (RSA decryption)
 const decryptMessage = (encryptedMessage) => {
   try {
-    const decrypted = crypto.privateDecrypt({key: privateKey, padding: crypto.constants.RSA_PKCS1_PADDING}, Buffer.from(encryptedMessage, 'base64'));
+    const decrypted = crypto.privateDecrypt(privateKey, Buffer.from(encryptedMessage, 'base64'));
     return decrypted.toString('utf8');
   } catch (error) {
     console.log(error)
@@ -69,7 +66,7 @@ export async function handleDecryption(req, res) {
 // Public Key sharing handler
 export async function getPublicKey(req, res) {
   try {
-    const encodedPublicKey = Buffer.from(publicKey).toString('base64'); 
+    const encodedPublicKey = Buffer.from(publicKey).toString('base64');
     res.json({ publicKey: encodedPublicKey });
   } catch (error) {
     console.error(error);
